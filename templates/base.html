@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Page Info -->
+    <meta charset="utf-8">
+    <title>QUICK OMR</title>
+
+    <!-- Site Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='vendors/images/apple-touch-icon.png') }}">
+    <!-- <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='vendors/images/logo.jpg') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='vendors/images/logo.jpg') }}"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Mobile Specific Metas -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendors/styles/core.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendors/styles/icon-font.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='src/plugins/datatables/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='src/plugins/datatables/css/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='vendors/styles/style.css') }}">
+
+    <!-- Global Site Tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-119386393-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-119386393-1');
+    </script>
+    
+    <style>
+        /* Ensure the entire layout is flexible and occupies the full viewport height */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Main container to hold sidebar and content */
+        .main-container {
+            display: flex;
+            flex: 1;
+        }
+
+        /* Sidebar styling */
+        .sidebar {
+            width: 10px; /* Adjust as needed */ 
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: #f8f9fa; /* Adjust as needed */
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional shadow */
+        }
+
+        /* Content area styling */
+        .content {
+            margin-left: 10px; /* Match the width of the sidebar */ 
+            padding: 20px;
+            flex: 1;
+        }
+
+        /* Footer styling */
+        .footer-wrap {
+            background-color: #f1f1f1; /* Adjust as needed */
+            text-align: center;
+            padding: 10px; /* Adjust as needed */
+            box-shadow: 0 -1px 5px rgba(0, 0, 0, 0.1); /* Optional shadow */
+            position: relative;
+            bottom: 0;
+        }
+    </style> 
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="header-left">
+        <div class="menu-icon dw dw-menu"></div>
+        <!-- Replace the search box with a welcome message -->
+        <div class="header-welcome-message">
+            <h5 class="mr-2" id="welcome-message" style="text-align: center;padding: 10px;"></h5>
+            <p  style="text-align: center;" id="current-datetime"></p>
+        </div>
+    </div>
+    <div class="header-right">
+        <div class="dashboard-setting user-notification">
+            <div class="dropdown">
+               <!-- <a class="dropdown-toggle no-arrow" href="javascript:;" data-toggle="right-sidebar">
+                    <i class="dw dw-settings2"></i>-->
+                </a>
+            </div>
+        </div>
+      
+        <div class="user-info-dropdown">
+            <div class="dropdown">
+                <a class="dropdown-toggle" href="#" role="button" data-toggle="dropdown">
+                    <span class="user-icon">
+                        <img src="{{ url_for('static', filename='vendors/images/logo.jpg') }}" alt="">
+                    </span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right dropdown-menu-icon-list">
+                    <form method="post" action="{{ url_for('auth.logout') }}">
+                        <button type="submit" class="dropdown-item">
+                            <i class="dw dw-logout"></i> Log Out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateDateTime() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
+        const formattedHours = hours % 12 || 12;
+        const formattedTime = `${formattedHours}:${minutes} ${ampm}`;
+        
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const year = now.getFullYear();
+        const formattedDate = `${day}-${month}-${year}`;
+        
+        // Determine the greeting based on the current time
+        let greeting;
+        if (hours < 12) {
+            greeting = 'Good Morning';
+        } else if (hours < 17) {
+            greeting = 'Good Afternoon';
+        } else if (hours < 21) {
+            greeting = 'Good Evening';
+        } else {
+            greeting = 'Good Night';
+        }
+        
+        // Set the greeting and date/time in the elements
+        document.getElementById('welcome-message').textContent = `${greeting}, {{ current_user.username }}`;
+        document.getElementById('current-datetime').textContent = `It's ${formattedDate}, ${formattedTime}`;
+    }
+
+    setInterval(updateDateTime, 60000); // Update date and time every minute
+    updateDateTime(); // Initial call to set the date and time
+</script>
+
+</script>
+
+
+
+
+
+    <!-- Right Sidebar -->
+    <div class="right-sidebar">
+        <div class="sidebar-title">
+            <h3 class="weight-600 font-16 text-blue">
+                Layout Settings
+                <span class="btn-block font-weight-400 font-12">User Interface Settings</span>
+            </h3>
+            <div class="close-sidebar" data-toggle="right-sidebar-close">
+                <i class="icon-copy ion-close-round"></i>
+            </div>
+        </div>
+        <div class="right-sidebar-body customscroll">
+            <div class="right-sidebar-body-content">
+                <h4 class="weight-600 font-18 pb-10">Header Background</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary header-white active">White</a>
+                    <a href="javascript:void(0);" class="btn btn-outline-primary header-dark">Dark</a>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Sidebar Background</h4>
+                <div class="sidebar-btn-group pb-30 mb-10">
+                    <a href="javascript:void(0);" class="btn btn-outline-primary sidebar-light ">White</a>
+                    <a href="javascript:void(0);" class="btn btn-outline-primary sidebar-dark active">Dark</a>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Menu Dropdown Icon</h4>
+                <div class="sidebar-radio-group pb-10 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebaricon-1" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-1" checked="">
+                        <label class="custom-control-label" for="sidebaricon-1"><i class="fa fa-angle-down"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebaricon-2" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-2">
+                        <label class="custom-control-label" for="sidebaricon-2"><i class="ion-plus-round"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebaricon-3" name="menu-dropdown-icon" class="custom-control-input" value="icon-style-3">
+                        <label class="custom-control-label" for="sidebaricon-3"><i class="fa fa-angle-double-right"></i></label>
+                    </div>
+                </div>
+
+                <h4 class="weight-600 font-18 pb-10">Menu List Icon</h4>
+                <div class="sidebar-radio-group pb-10 mb-10">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-1" name="menu-list-icon" class="custom-control-input" value="icon-list-style-1" checked="">
+                        <label class="custom-control-label" for="sidebariconlist-1"><i class="ion-minus-round"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-2" name="menu-list-icon" class="custom-control-input" value="icon-list-style-2">
+                        <label class="custom-control-label" for="sidebariconlist-2"><i class="fa fa-circle-o" aria-hidden="true"></i></label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input type="radio" id="sidebariconlist-3" name="menu-list-icon" class="custom-control-input" value="icon-list-style-3">
+                        <label class="custom-control-label" for="sidebariconlist-3"><i class="dw dw-check"></i></label>
+                    </div>
+                </div>
+
+                <div class="reset-options pt-30 text-center">
+                    <button class="btn btn-danger" id="reset-settings">Reset Settings</button>
+                </div>
+            </div>
+        </div>
+    </div>
+   <!-- Sidebar Menu -->
+<div class="left-side-bar">
+    <div class="brand-logo">
+        <a href="">
+            <h5 style="color: white;">Welcome to TGS</h5>
+        </a>
+        <div class="close-sidebar" data-toggle="left-sidebar-close">
+            <i class="ion-close-round"></i>
+        </div>
+    </div>
+    <div class="menu-block customscroll">
+        <div class="sidebar-menu">
+            <ul id="accordion-menu">
+                <!-- <li>
+                    <a href="/" class="dropdown-toggle no-arrow">
+                        <span class="micon dw dw-house-1"></span><span class="mtext">Dashboard</span>
+                    </a>
+                </li> -->
+                <li style="display: none;">
+                    <a href="{{ url_for('answer_key') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon dw dw-key"></span><span class="mtext">Add Answer Key</span>
+                    </a>
+                </li>
+                <li style="display: none;">
+                    <a href="{{ url_for('upload.upload_answer_key') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon dw dw-upload"></span><span class="mtext">Upload Answer Key</span>
+                    </a>
+                </li>
+                <li>
+                    <li><a href="{{ url_for('view_answer_key.view_answer_key') }}"class="dropdown-toggle no-arrow">
+                        <span class="micon fas fa-eye"></span><span class="mtext">View Answer Key</span>
+                    </a>
+                </li>
+
+                
+               
+                <li>
+                    <a href="/" class="dropdown-toggle no-arrow">
+                        <span class="micon dw dw-upload"></span><span class="mtext">OMR Upload</span>
+                    </a>
+                </li>
+                
+                <li>
+                    <a href="{{ url_for('results.results') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon dw dw-list"></span><span class="mtext">View Result</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('new_results.new_results') }}" class="dropdown-toggle no-arrow">
+                        <span class="micon fas fa-chart-line"></span><span class="mtext">Result Summary</span>
+                    </a>
+                </li>
+                
+                <!-- Add more menu items as needed -->
+            </ul>
+        </div>
+    </div>
+</div>
+ 
+
+    <div class="mobile-menu-overlay"></div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <!-- Sidebar content -->
+            {% block sidebar %}
+            {% endblock %}
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            {% block content %}
+            <!-- Your dynamic content here -->
+            {% endblock %}
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-wrap pd-20 mb-20 card-box">
+        <p>© 2024 School Digitalised. All Rights Reserved.</p>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='vendors/scripts/core.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/scripts/script.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/scripts/process.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendors/scripts/layout-settings.js') }}"></script>
+    <script src="{{ url_for('static', filename='src/plugins/datatables/js/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='src/plugins/datatables/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='src/plugins/datatables/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='src/plugins/datatables/js/responsive.bootstrap4.min.js') }}"></script>
+</body>
+</html>

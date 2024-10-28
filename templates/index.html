@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Upload OMR{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h5 class="text-center mt-3">
+                        <span>Upload OMR</span>
+                    </h5>
+                </div>
+
+                <!-- Download Template Button -->
+                <div class="col-md-12 text-right mb-4 mt-3">
+                    <a href="{{ url_for('static', filename='TGS-OMRSHEET.png') }}" download="IMAGE NOT FOUND" class="btn btn-primary btn-sm">Download CSV Template</a>
+                </div>
+
+                <!-- Form for uploading data -->
+                <div style="display: flex; justify-content: center;">
+                <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
+                    <div class="col-md-12 mb-4">
+                        <label for="examid" class="form-label">Exam ID</label>
+                        <select id="examid" name="examid" class="form-control" required>
+                            <option value="" disabled selected>Select Exam ID</option>
+                            {% for id in exam_ids %}
+                                <option value="{{ id }}">{{ id }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-12 mb-4">
+                        <label for="exam_date" class="form-label">Exam Date</label>
+                        <input type="date" id="exam_date" name="exam_date" class="form-control" required>
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <input type="file" id="files" name="files" accept="image/*" multiple class="form-control" required>
+                    </div>
+
+                    <div class="col-md-12 mb-4">
+                        <button class="btn btn-primary btn-sm" type="submit">Upload</button>
+                    </div>
+                    
+                    <div class="col-md-12 mb-2">
+                        <div class="progress mb-3" style="display: none;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for existing data -->
+<div id="existingDataPopup" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Data Already Exists</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Data already exists for the following files:</p>
+                <ul id="existingFilesList"></ul>
+                <p>Please check your records.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div id="imagePreviewModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Image Preview</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img id="previewImage" src="" class="img-fluid" alt="Image Preview">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="imagePreviewContainer" class="row"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('uploadForm');
+        const progressBar = document.querySelector('.progress');
+        const progressBarInner = document.querySelector('.progress-bar');
+        const filesInput = document.getElementById('files');
+        const existingDataPopup = new bootstrap.Modal(document.getElementById('existingDataPopup'), {
+            backdrop: 'static',
+            keyboard: false
+        });
+        const existingFilesList = document.getElementById('existingFilesList');
+
+        // Show popup if data exists
+        const existingFiles = {{ existing_files|tojson|safe }};
+        if (existingFiles && existingFiles.length > 0) {
+            existingFiles.forEach(file => {
+                const listItem = document.createElement('li');
+                listItem.textContent = file;
+                existingFilesList.appendChild(listItem);
+            });
+            existingDataPopup.show();
+        }
+
+        // Form submission logic
+        form.addEventListener('submit', function(event) {
+            if (existingFiles && existingFiles.length > 0) {
+                event.preventDefault(); // Prevent form submission if data exists
+                return;
+            }
+
+            // Simulate upload progress
+            progressBar.style.display = 'block';
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 10;
+                progressBarInner.style.width = `${progress}%`;
+                progressBarInner.textContent = `${progress}%`;
+                progressBarInner.setAttribute('aria-valuenow', progress);
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    progressBar.style.display = 'none';
+                }
+            }, 500);
+        });
+
+        // Image preview logic for multiple files
+        filesInput.addEventListener('change', function() {
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            imagePreviewContainer.innerHTML = '';
+            const files = Array.from(this.files);
+
+            if (files.length > 0) {
+                imagePreviewContainer.style.display = 'flex';
+                imagePreviewContainer.style.flexWrap = 'wrap';
+
+                files.forEach(file => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = e.target.result;
+                        imgElement.classList.add('img-thumbnail', 'm-1');
+                        imgElement.style.maxWidth = '150px';
+                        imgElement.style.cursor = 'pointer';
+                        imgElement.addEventListener('click', () => {
+                            const previewImage = document.getElementById('previewImage');
+                            previewImage.src = e.target.result;
+                            new bootstrap.Modal(document.getElementById('imagePreviewModal')).show();
+                        });
+                        imagePreviewContainer.appendChild(imgElement);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            } else {
+                imagePreviewContainer.style.display = 'none';
+            }
+        });
+    });
+</script>
+
+{% endblock %}

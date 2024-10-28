@@ -1,0 +1,30 @@
+<!-- templates/form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enter Exam Data</title>
+</head>
+<body>
+    <h1>Enter Exam Data</h1>
+    <form method="post">
+        <label for="exam_id">Exam ID:</label>
+        <input type="text" id="exam_id" name="exam_id" required><br>
+
+        <label for="question_no">Question Number:</label>
+        <input type="text" id="question_no" name="question_no" required><br>
+
+        <label for="exam_date">Exam Date:</label>
+        <input type="date" id="exam_date" name="exam_date" required><br>
+
+        <label for="answer_key">Answer Key:</label>
+        <input type="text" id="answer_key" name="answer_key" required><br>
+
+        <label for="question_marks">Question Marks:</label>
+        <input type="number" id="question_marks" name="question_marks" required><br>
+
+        <input type="submit" value="Submit">
+    </form>
+</body>
+</html>

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Results View{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse; /* Ensures borders collapse into a single border */
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 2px solid #000; /* Set border width to make it more visible */
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: center; /* Center-aligns text in table cells */
+        }
+
+        th {
+            background-color: #002366;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student Results</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Exam ID</th>
+                    <!-- <th>Student Name</th> -->
+                    <th>Admission No</th>
+                    <th>Exam Date</th>
+                    <th>Total Questions</th>
+                    <th>Total Marks</th>
+                    <th>Total Obtained Marks</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.examid }}</td>
+                    <!-- <td>{{ result.name }}</td> -->
+                    <td>{{ result.admissionno }}</td>
+                    <td>{{ result.date }}</td>
+                    <td>{{ result.total_questions }}</td>
+                    <td>{{ result.total_marks }}</td>
+                    <td>{{ result.total_obtained_marks }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+{% endblock %}

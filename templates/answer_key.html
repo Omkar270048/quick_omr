@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Answer Key{% endblock %}
+
+{% block content %}
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+059Y0A2u4q4d+QoKp4M8f7tbmH1lT5eT59BzO7d6WpfvKqg9" crossorigin="anonymous">
+
+<div class="container mt-1">
+    <h1 class="mb-4">Add Answer Key</h1>
+
+    <!-- Form in Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Answer Key Form</h5>
+        </div>
+        <div class="card-body">
+            <form id="answerKeyForm" action="{{ url_for('answer_key_bp.answer_key') }}" method="POST">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="exam_id">Exam ID</label>
+                            <input type="text" name="examid" id="exam_id" class="form-control" placeholder="Exam ID" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="exam_date">Exam Date</label>
+                            <input type="date" name="exam_date" id="exam_date" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="question_count">Number of Questions</label>
+                            <input type="number" id="question_count" class="form-control" placeholder="Enter number of questions" min="1" max="100" required>
+                        </div>
+                    </div>
+                    <button type="button" id="generate_rows" class="btn btn-primary mt-2">Generate Rows</button>
+                </div>
+                <div class="table-responsive mt-4">
+                    <table class="table table-bordered" id="answer_key_table">
+                        <thead>
+                            <tr>
+                                <th>Question No</th>
+                                <th>Answer Key</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <button type="submit" class="btn btn-primary btn-lg mt-4">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <p class="text-center mb-0">{{ message }}</p>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+Knujsl2l2h9K0z9mAdWoO9x0vP5lTETa8Q0OVpe6th4wK56" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-smhQjEjbWjv2EBKLH6a36Zfivflb4kaieeFAyLgA7UszmfU30NGgQF2wQG0XLh2qK" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8+F3+6p99RCkPzE4IBpGZXjGbcJb7pJf26fb9KZ2yFfQp5O4qk" crossorigin="anonymous"></script>
+
+<script>
+    document.getElementById('generate_rows').addEventListener('click', function() {
+        const questionCount = parseInt(document.getElementById('question_count').value);
+        const tbody = document.querySelector('#answer_key_table tbody');
+        
+        // Clear previous rows
+        tbody.innerHTML = '';
+
+        if (isNaN(questionCount) || questionCount <= 0) return;
+
+        for (let i = 1; i <= questionCount; i++) {
+            const row = `
+                <tr>
+                    <td><input type="number" name="question_no${i}" value="${i}" class="form-control" placeholder="Q${i}" readonly></td>
+                    <td><input type="number" name="answer_key${i}" class="form-control" placeholder="Answer" min="1" max="4" required></td>
+                    <td><input type="number" name="marks${i}" class="form-control" placeholder="Marks" required></td>
+                </tr>
+            `;
+            tbody.insertAdjacentHTML('beforeend', row);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = "{{ get_flashed_messages(with_categories=True)[0][1] if get_flashed_messages(with_categories=True) else '' }}";
+        if (successMessage) {
+            const successModal = new bootstrap.Modal(document.getElementById('successModal'), {
+                keyboard: false
+            });
+            successModal.show();
+        }
+    });
+</script>
+{% endblock %}

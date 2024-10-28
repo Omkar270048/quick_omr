@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}New Results View{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="mb-4">Result Summary</h3>
+    
+    <!-- Filter Form in Card -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="card-title">Filter Results</h5>
+        </div>
+        <div class="card-body">
+            <form class="row g-3" action="{{ url_for('new_results.new_results') }}" method="get">
+                <div class="col-md-2">
+                    <label for="examid" class="form-label">Exam ID:</label>
+                    <select id="examid" name="examid" class="form-control">
+                        <option value="" disabled selected>Select Exam ID</option>
+                        {% for id in exam_ids %}
+                            <option value="{{ id }}" {% if id == examid %}selected{% endif %}>{{ id }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="date" class="form-label">Date:</label>
+                    <input type="date" id="date" name="date" class="form-control" value="{{ date }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="admissionno" class="form-label">Admission No:</label>
+                    <input type="text" id="admissionno" name="admissionno" class="form-control" placeholder="Admission No" value="{{ admissionno }}">
+                </div>
+                <div class="col-md-2">
+                    <label for="per_page" class="form-label">Per Page:</label>
+                    <input type="number" id="per_page" name="per_page" class="form-control" value="{{ per_page }}" min="1">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter Results</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Results Table in Card -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title">Results
+            <a href="{{ url_for('new_results.export_new_results', examid=examid, date=date, name=name, admissionno=admissionno) }}" class="btn btn-success float-right">Export to Excel</a>
+            </h5>
+        </div>
+        <div class="card-body">
+            {% if results %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Exam ID</th>
+                                <th>Name</th>
+                                <th>Admission No</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Date</th>
+                                <th>Total Questions</th>
+                                <th>Total Marks</th>
+                                <th>Total Obtained Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                                <tr>
+                                    <td>{{ result.examid }}</td>
+                                    <td>{{ result.name }}</td>
+                                    <td>{{ result.admissionno }}</td>
+                                    <td>{{ result.class }}</td>
+                                    <td>{{ result.section }}</td>
+                                    <td>{{ result.date }}</td>
+                                    <td>{{ result.total_questions }}</td>
+                                    <td>{{ result.total_marks }}</td>
+                                    <td>{{ result.total_obtained_marks }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Controls in Card Footer -->
+                <div class="card-footer">
+                    <nav aria-label="Page navigation">
+                        <ul class="pagination justify-content-center mb-0">
+                            {% if page > 1 %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('new_results.new_results', page=page-1, examid=examid, date=date, admissionno=admissionno, per_page=per_page) }}" aria-label="Previous">
+                                        <span aria-hidden="true">&laquo; Previous</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">&laquo; Previous</span>
+                                </li>
+                            {% endif %}
+
+                            {% for p in range(start_page, end_page + 1) %}
+                                <li class="page-item {% if p == page %}active{% endif %}">
+                                    <a class="page-link" href="{{ url_for('new_results.new_results', page=p, examid=examid, date=date, admissionno=admissionno, per_page=per_page) }}">{{ p }}</a>
+                                </li>
+                            {% endfor %}
+
+                            {% if page < total_pages %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('new_results.new_results', page=page+1, examid=examid, date=date, admissionno=admissionno, per_page=per_page) }}" aria-label="Next">
+                                        <span aria-hidden="true">Next &raquo;</span>
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Next &raquo;</span>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+            {% else %}
+                <p class="text-center">No results found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
