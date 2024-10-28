@@ -1,0 +1,81 @@
+/* Reset some default styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: url('/static/background.jpg') no-repeat center center fixed;
+    background-size: cover;
+    font-family: 'Roboto', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.login-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+.form {
+    background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px; /* Standard width */
+    text-align: center;
+}
+
+.logo {
+    width: 100px; /* Adjust as needed */
+    height: auto;
+    margin-bottom: 20px;
+}
+
+form input {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+    width: calc(100% - 30px);
+    font-size: 14px;
+}
+
+form button {
+    background: #4CAF50;
+    border: none;
+    color: #fff;
+    padding: 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    transition: background 0.3s ease;
+}
+
+form button:hover {
+    background: #45a049;
+}
+
+.message {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #666;
+}
+
+.message a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+.message a:hover {
+    text-decoration: underline;
+}
