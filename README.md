@@ -1,2 +1,2 @@
 # quick_omr
-OMR Software - School Digitalised - Python Flask Bootstrap
+OMR Software - Python Flask Bootstrap
